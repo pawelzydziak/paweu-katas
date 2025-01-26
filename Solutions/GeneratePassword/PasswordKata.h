@@ -4,10 +4,13 @@
 #include <ctime>
 #include <random>
 #include <vector>
-#include "../../common/KataFramework.h"
+#include "../../lib/KataFramework.h"
 
 class PasswordKata : public IKata {
 public:
+    PasswordKata() {
+        name = "Password Kata";
+    }
     std::any Solve(const std::vector<std::any> &args) override
     {
         // wylosowac dlugosc

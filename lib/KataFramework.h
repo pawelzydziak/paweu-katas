@@ -14,6 +14,7 @@ struct TestCase {
 
 class IKata {
 public:
+    std::string name;
     virtual ~IKata() = default;
     virtual std::any Solve(const std::vector<std::any>& args) = 0;
     virtual std::vector<TestCase> GetTestCases() = 0;
@@ -32,6 +33,7 @@ TestCase MakeTestCase(std::vector<std::any> inputs, T expected) {
 }
 
 void RunKata(IKata& kata) {
+    std::cout << "Running kata: " << kata.name << "\n";
     for (const auto& testCase : kata.GetTestCases()) {
         try {
             std::any result = kata.Solve(testCase.inputs);
