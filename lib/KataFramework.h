@@ -5,6 +5,9 @@
 #include <vector>
 #include <functional>
 #include <iostream>
+#include <format>
+
+constexpr int g_debug = 0; //todo
 
 struct TestCase {
     std::vector<std::any> inputs;
@@ -33,19 +36,24 @@ TestCase MakeTestCase(std::vector<std::any> inputs, T expected) {
 }
 
 void RunKata(IKata& kata) {
+    int passed = 0;
     std::cout << "Running kata: " << kata.name << "\n";
     for (const auto& testCase : kata.GetTestCases()) {
         try {
             std::any result = kata.Solve(testCase.inputs);
             if (testCase.comparator(result, testCase.expected)) {
-                std::cout << "Test passed!\n";
+                if(g_debug)
+                    std::cout << "Test passed!\n";
+                passed++;
             } else {
-                std::cout << "Test failed: wrong result\n";
+                if(g_debug)
+                    std::cout << "Test failed: wrong result\n";
             }
         } catch (const std::exception& e) {
             std::cout << "Test failed: " << e.what() << "\n";
         }
     }
+    std::cout << std::format("Finished running kata: {} ({}/{})\n", kata.name, passed, kata.GetTestCases().size());
 }
 
 #endif //KATA_KATAFRAMEWORK_H
