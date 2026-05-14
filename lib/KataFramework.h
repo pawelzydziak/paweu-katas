@@ -11,8 +11,7 @@ constexpr int g_debug = 0; //todo
 
 struct TestCase {
     std::vector<std::any> inputs;
-    std::any expected;
-    std::function<bool(const std::any&, const std::any&)> comparator;
+    std::function<bool(const std::any&)> validator;
 };
 
 class IKata {
@@ -28,20 +27,35 @@ std::vector<std::any> MakeInputs(Args&&... args) {
     return { std::forward<Args>(args)... };
 }
 
+// equality test, it should be equal to sth
 template<typename T>
-TestCase MakeTestCase(std::vector<std::any> inputs, T expected) {
-    return { inputs, std::any(expected), [](const std::any& a, const std::any& b) {
-        return std::any_cast<T>(a) == std::any_cast<T>(b);
-    }};
+TestCase MakeEqualityTestCase(std::vector<std::any> inputs, T expected) {
+    return {
+        std::move(inputs),
+        [expected](const std::any& result) {
+            return std::any_cast<T>(result) == expected;
+        }
+    };
 }
 
-void RunKata(IKata& kata) {
+// predicate test, it should fulfill condition
+template<typename T>
+TestCase MakePredicateTestCase(std::vector<std::any> inputs, std::function<bool(const T&)> predicate) {
+    return {
+        std::move(inputs),
+        [predicate](const std::any& result) {
+            return predicate(std::any_cast<T>(result));
+        }
+    };
+}
+
+inline void RunKata(IKata& kata) {
     int passed = 0;
     std::cout << "Running kata: " << kata.name << "\n";
     for (const auto& testCase : kata.GetTestCases()) {
         try {
             std::any result = kata.Solve(testCase.inputs);
-            if (testCase.comparator(result, testCase.expected)) {
+            if (testCase.validator(result)) {
                 if(g_debug)
                     std::cout << "Test passed!\n";
                 passed++;

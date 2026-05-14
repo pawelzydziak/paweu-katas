@@ -17,23 +17,15 @@ public:
 
     std::vector<TestCase> GetTestCases() override {
         std::vector<TestCase> testCases;
-        testCases.push_back(MakeTestCase(MakeInputs(seven(times(five()))), 35));
-        testCases.push_back(MakeTestCase(MakeInputs(four(plus(nine()))), 13));
-        testCases.push_back(MakeTestCase(MakeInputs(eight(minus(three()))), 5));
-        testCases.push_back(MakeTestCase(MakeInputs(six(divided_by(two()))), 3));
-        testCases.push_back(MakeTestCase(MakeInputs(eight(divided_by(three()))), 2));
+        testCases.push_back(MakeEqualityTestCase(MakeInputs(seven(times(five()))), 35));
+        testCases.push_back(MakeEqualityTestCase(MakeInputs(four(plus(nine()))), 13));
+        testCases.push_back(MakeEqualityTestCase(MakeInputs(eight(minus(three()))), 5));
+        testCases.push_back(MakeEqualityTestCase(MakeInputs(six(divided_by(two()))), 3));
+        testCases.push_back(MakeEqualityTestCase(MakeInputs(eight(divided_by(three()))), 2));
         return testCases;
     }
 
 private:
-    template<typename T>
-    static std::function<bool(const std::any&, const std::any&)> CreateComparator() {
-        return [](const std::any &a, const std::any &b) {
-            return std::any_cast<T>(a) == std::any_cast<T>(b);
-        };
-    }
-
-
     auto zero(const std::function<int(int)>& fun = nullptr) -> int {
         return fun ? fun(0) : 0;
     }

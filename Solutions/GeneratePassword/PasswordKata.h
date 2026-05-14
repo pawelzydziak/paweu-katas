@@ -53,28 +53,19 @@ public:
     std::vector<TestCase> GetTestCases() override {
         std::vector<TestCase> testCases;
 
-        for (int i = 0; i < 5; ++i)
-        {
-            testCases.push_back({
-            {},  // no imp arg
-            std::any(),  // exp val unused
-            CreateComparator<std::string>()
-            });
+        for (int i = 0; i < 5; ++i) {
+            testCases.push_back(MakePredicateTestCase<std::string>(
+                {},
+                [](const std::string& pass) {
+                    return pass.size() >= 6 && pass.size() <= 20 &&
+                           std::any_of(pass.begin(), pass.end(), [](unsigned char c){ return std::isdigit(c); }) &&
+                           std::any_of(pass.begin(), pass.end(), [](unsigned char c){ return std::isupper(c); }) &&
+                           std::any_of(pass.begin(), pass.end(), [](unsigned char c){ return std::islower(c); });
+                }
+            ));
         }
 
         return testCases;
-    }
-
-private:
-    template<typename T>
-    static std::function<bool(const std::any&, const std::any&)> CreateComparator() {
-        return [](const std::any &a, const std::any &b) {
-            auto pass = std::any_cast<std::string>(a);
-            return pass.size() >= 6 && pass.size() <= 20 &&
-                   std::any_of(pass.begin(), pass.end(), isdigit) &&
-                   std::any_of(pass.begin(), pass.end(), isupper) &&
-                   std::any_of(pass.begin(), pass.end(), islower);
-        };
     }
 };
 
